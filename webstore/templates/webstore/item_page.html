@@ -1,0 +1,145 @@
+{% extends "webstore/layout.html" %}
+{% load static %}
+
+{% block body %}
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <div class="item_page_box">
+        <div class="item_page_photo" style="justify-content: center; align-items: center; display: flex;">
+            <img src="{{ item_data.picture.url }}" style="max-width: 270px; max-height: 200px">
+        </div>
+        <div class="item_page_content">
+            <div class="item_page_name">
+                <div style="display: inline-block; width: auto">
+                    <h4 style="display: inline-block;">{{ item_data.item_name }}</h4>
+                </div>
+                {% if user.is_admin %}
+                <form action="{% url 'webstore:item_delete' item_data.id %}" style="float: right">
+                    <input class="btn cart_and_item_delete" style="font-size: 14px" type="submit" value="Delete">
+                </form>
+                {% endif %}
+                <form action="{% url 'webstore:cart_add' item_data.id %}" style="float: right">
+                    <input class="btn cart_and_item" style="font-size: 14px;" type="submit" value="Add to Cart">
+                </form>
+                
+            </div>
+            <div class="item_page_price">
+                Price: <span style="color: #B51B0A;">${{ item_data.item_price }}</span>
+            </div>
+            <div class="item_page_rating">
+                <span id="rating_star_outerbox" class="heading">Rating: 
+                <span id="rating_star_box">
+                    <span class="fa fa-star first {% if item_data.rating_average > 0.5 %} checked {% endif %}"></span>
+                    <span class="fa fa-star second {% if item_data.rating_average > 1.5 %} checked {% endif %}"></span>
+                    <span class="fa fa-star third {% if item_data.rating_average > 2.5 %} checked {% endif %}"></span>
+                    <span class="fa fa-star fourth {% if item_data.rating_average > 3.5 %} checked {% endif %}"></span>
+                    <span class="fa fa-star fifth {% if item_data.rating_average > 4.5 %} checked {% endif %}"></span>
+                <span style="color: #515151;font-size: 14px;"> (rating: {{ item_data.rating_average|floatformat:1 }})</span>
+                </span>
+                </span>
+            </div>
+            <div style="{% if item_data.number_in_store < 10%}color: #FF381C {% else %}color: #14EB38 {% endif %};">
+                {% if user.is_admin%} Number in Store: {{ item_data.number_in_store }} {% endif %}
+                
+            </div>
+            <div class="item_page_footnote">
+                <label>Description: </label>
+                {{ item_data.item_Description }}
+            </div>
+        </div>
+        {% if user.is_authenticated %}
+        <script>
+
+            var star1 = document.getElementsByClassName("first")[0];
+            var star2 = document.getElementsByClassName("second")[0];
+            var star3 = document.getElementsByClassName("third")[0];
+            var star4 = document.getElementsByClassName("fourth")[0];
+            var star5 = document.getElementsByClassName("fifth")[0];
+            starlist = [star1, star2, star3, star4, star5];
+            var starbox = document.getElementById('rating_star_outerbox');
+
+            star_hovering_detect(star1, 'mouseover', 1);
+            star_hovering_detect(star2, 'mouseover', 2);
+            star_hovering_detect(star3, 'mouseover', 3);
+            star_hovering_detect(star4, 'mouseover', 4);
+            star_hovering_detect(star5, 'mouseover', 5);
+            origin_rating(starlist, starbox, 'mouseout');
+
+            change_rating(starlist);
+
+            function change_rating(starlist) {
+                starlist.forEach((item, rate_score) => {
+                    item.addEventListener('click', (__, i=rate_score+1) => {
+                        fetch(`/GamerAsia/rate_item/{{ item_data.id }}/${i}`, {redirect: 'follow'})
+                        .then(response => {
+                            if (response.redirected) {
+                                window.location.href = response.url;
+                            }
+                        })
+                        .catch(function(err) {
+                            console.info(err + " url: " + url);
+                        }) 
+                    })
+                })
+            }
+
+            function star_hovering_detect(elem, event, star_number) {
+                elem.addEventListener(event, () => {
+                    if (event == 'mouseover') {
+                        star_light_up(star_number);
+                    }
+                    if (event == 'mouseout') {
+                        return false;
+                    }
+                })
+            }
+
+            function origin_rating(starlist, starbox, event) {
+                starbox.addEventListener(event, () => {
+                    if (event == 'mouseout') {
+                        for (i=0; i < starlist.length; i++) {
+                            if (parseFloat('{{ item_data.rating_average }}') > i + 1 / 2) {
+                                starlist[i].classList.add('checked');
+                            }
+                            else {
+                                starlist[i].classList.remove('checked');
+                            }
+                        }
+                    }
+                });
+            }
+
+            function star_light_up(star_number) {
+                for (i=1; i <= 5; i++) {
+                    switch (i) {
+                        case 1: 
+                            class_name = 'first';
+                            break;
+                        case 2: 
+                            class_name = 'second';
+                            break;
+                        case 3: 
+                            class_name = 'third';
+                            break;
+                        case 4: 
+                            class_name = 'fourth';
+                            break;
+                        case 5: 
+                            class_name = 'fifth';
+                            break;
+                    }
+                    star = document.getElementsByClassName(class_name)[0]
+                    if (i <= star_number) {
+                        star.classList.add('checked');
+                    }
+                    else if (i > star_number) {
+                        star.classList.remove('checked');
+                    }
+                }
+            };
+        </script>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block script %}
+{% endblock %}

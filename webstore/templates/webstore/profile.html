@@ -1,0 +1,47 @@
+{% extends "webstore/layout.html" %}
+{% load static %}
+
+{% block body %}
+
+<div style="min-height: auto; width: 360px; margin: auto; padding: 25px; border: 1px solid #E6F1F4; border-radius: 5px;">
+    <h2>User: {{ user_name }}</h2>
+    <style>
+        .register_and_login:focus {box-shadow: 0 0 5px #D9990A; outline: none;}
+    </style>
+    <div class="box" style="padding-left: 5px; padding-right: 5px;">
+        <form action="{% url 'webstore:save_user_profile' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+                <label>Your email address:</label>
+                <input id="email" type="email" name="email" readonly class="form-control register_and_login" value="{{ user_email }}" placeholder="Enter email" style="background-color: white; height: 32.5px; font-size: 14px; border: 1px solid #9B9791;">
+                <br>
+                <label>Birthday:</label>
+                <input id="birthday" type="date" name="birthday" readonly class="form-control register_and_login" value="{{ user_birthday }}" style="background-color: white; height: 32.5px; font-size: 14px; border: 1px solid #9B9791;">
+                <br>
+                <label>Delivery address (optional):</label>
+                <textarea id="address" class="form-group register_and_login" name="address" readonly cols="30" rows="7" style="width: 100%;margin: 0px; overflow-wrap: break-word; background-color: white; font-size: 14px; border: 1px solid #9B9791;">{{ user_delivery_address }}</textarea>
+            <input id="change_profile_button" readonly class="btn btn-primary form-control" value="Edit" style="height: 32.5px; font-size: 14px; padding: 5px; color: #303030;background-color: #F7D69A; box-shadow: 0px -5px 15px 5px #F8C059 inset; border: 1px solid #976819">
+        </form>
+    </div>
+</div>
+<script>
+    var button = document.getElementById("change_profile_button");
+    var email = document.getElementById("email");
+    var birthday = document.getElementById("birthday");
+    var address = document.getElementById("address");
+
+    button.addEventListener('click', () => {
+        if (button.value == "Edit") {
+            email.readOnly = false;
+            birthday.readOnly = false;
+            address.readOnly = false;
+            button.value = "Save";
+        }
+        else if (button.value == "Save") {
+            button.type = "submit";
+        }
+    })
+</script>
+{% endblock %}
+
+{% block script %}
+{% endblock %}

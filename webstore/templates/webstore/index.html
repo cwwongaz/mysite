@@ -1,0 +1,70 @@
+{% extends "webstore/layout.html" %}
+{% load static %}
+
+{% block body %}
+<div id="outer_container">
+    {% for i in items %}
+        <div class="box" onclick="location.href=`{% url 'webstore:item_page' item_id=i.id %}`;">
+            <div class="photo" style="justify-content: center; align-items: center; display: flex;">
+                <!-- implement picture upload -->
+                <img src="{{ i.picture.url }}" style="max-width: 270px; max-height: 200px">
+                <!-- old way of fetching an url for image -->
+                <!-- <img src="https://img.ltn.com.tw/Upload/partner/page/2019/07/03/190703-4093-05-tz5Wi.jpg" style="max-width: 270px; max-height: 200px"> -->
+            </div>
+            <div class="name">
+                <h6>{{ i.item_name }}</h6>
+            </div>
+            <div class="price" style="color: #B51B0A;">
+                $<span>{{ i.item_price }}</span>
+            </div>
+            <div class="rating">
+                <div class="item_page_rating">
+                    <span class="heading">Rating: </span>
+                    <span class="fa fa-star first {% if i.rating_average > 0.5 %} checked {% endif %}"></span>
+                    <span class="fa fa-star second {% if i.rating_average > 1.5 %} checked {% endif %}"></span>
+                    <span class="fa fa-star third {% if i.rating_average > 2.5 %} checked {% endif %}"></span>
+                    <span class="fa fa-star fourth {% if i.rating_average > 3.5 %} checked {% endif %}"></span>
+                    <span class="fa fa-star fifth {% if i.rating_average > 4.5 %} checked {% endif %}"></span>
+                    <span style="color: #515151;font-size: 14px;"> (rating: {{ i.rating_average|floatformat:1 }})</span>
+
+                </div>
+            </div>
+            <div class="footnote">
+                {{ i.item_footnote }}
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+    <!-- Pagination toolbar -->
+    <div>
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+                <li class="page-item {% if page_number == 1 %} disabled {% endif %}">
+                    <a class="page-link" href="{% url 'webstore:index' page_number=page_number|add:-1 %}" tabindex="-1">Previous</a>
+                </li>
+                {% if page_number > 2%}
+                <li class="page-item"><a class="page-link" href="{% url 'webstore:index' page_number|add:-2 %}">{{ page_number|add:-2 }}</a></li>
+                {% endif %}
+                {% if page_number > 1%}
+                <li class="page-item"><a class="page-link" href="{% url 'webstore:index' page_number|add:-1 %}">{{ page_number|add:-1 }}</a></li>
+                {% endif %}
+                <li class="page-item"><a class="page-link" style="background-color: rgba(251, 219, 190, 1); box-shadow: 0px 0px 12.5px 0px #F2B983 inset;" href="{% url 'webstore:index' page_number %}">{{ page_number }}</a></li>
+                {% if not page_number|add:1 > total_page %}
+                <li class="page-item"><a class="page-link" href="{% url 'webstore:index' page_number|add:1 %}">{{ page_number|add:1 }}</a></li>
+                {% endif %}
+                {% if not page_number|add:2 > total_page %}
+                <li class="page-item"><a class="page-link" href="{% url 'webstore:index' page_number|add:2 %}">{{ page_number|add:2 }}</a></li>
+                {% endif %}
+                <li class="page-item">
+                <li class="page-item {% if page_number == total_page %} disabled {% endif %}">
+                    <a class="page-link" href="{% url 'webstore:index' page_number=page_number|add:1 %}">Next</a>
+                </li>
+            </ul>
+          </nav>
+    </div>
+    <!-- End Pagination toolbar -->
+{% endblock %}
+
+{% block script %}
+{% endblock %}

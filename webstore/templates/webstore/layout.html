@@ -1,0 +1,95 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <head>
+        <title>{% block title %}GamerAsia{% endblock %}</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <link href="{% static 'webstore/styles.css' %}" rel="stylesheet">
+        <!-- Font Awesome Icon Library, star for rating -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">   
+        {% block script %}
+            <script src="{% static 'webstore/functions.js' %}"></script>
+        {% endblock %}
+    </head>
+    <body style="max-width: 4096px;">
+        <nav class="navbar navbar-expand-lg navbar-light" style="position: -webkit-sticky; position: sticky; top: 0; z-index: 1; background-color: rgba(255, 251, 247, 0.5); box-shadow: 0px 10px 15px 5px rgba(255, 234, 218, 0.5) inset;">
+            <div class="row">
+                <div>
+                    <a class="navbar-brand" href="{% url 'webstore:index' page_number=1 %}">GamerAsia</a>
+                </div>
+            
+                <div style="">
+                    <ul class="navbar-nav mr-auto">
+                        {% if user.is_authenticated %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'webstore:profile' %}">Welcome: {{ user.username }}</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'webstore:logout' %}">Logout</a>
+                            </li>
+                            {% if user.is_admin %}
+                                <li class="nav-link" style="display: inline-block;">
+                                    <form action="{% url 'webstore:new_item' %}">
+                                        <button class="btn cart_and_item" style="height: 30px;font-size: 14px; padding: 1px;" type="submit"> +New item</button>
+                                    </form>
+                                </li>
+                            {% endif %}
+                        {% else %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'webstore:login' %}">Login</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'webstore:register' %}">Register</a>
+                            </li>
+                        {% endif %}
+                            <li class="nav-item" style="float: right;">
+                                <a class="nav-link cart_icon"><img onclick="cart_popup()" src="https://image.flaticon.com/icons/svg/262/262611.svg" width="25" height="25" alt="Shopping cart" title="Shopping cart"> {{ num_in_cart }}</a>
+                                <div id="cart_table" class="" style="position: absolute; height: 250px; width: 150px; border-radius: 20px; border: 1px solid #F9CBB3; padding: 5px; background-color: rgba(255, 254, 250, 0.9); text-align: center; visibility: hidden; -webkit-backface-visibility: hidden; -moz-backface-visibility: hidden;">
+                                    <form action="{% url 'webstore:cart_detail' 1 %}">
+                                        <button class="btn cart_and_item" style="height: 30px;font-size: 14px; padding: 1px;" type="submit"> Check Out</button>
+                                    </form>
+                                    <br>
+                                    <form action="{% url 'webstore:cart_clear' %}">
+                                        <button class="btn cart_and_item" style="height: 30px;font-size: 14px; padding: 1px;" type="submit"> Clear cart</button>
+                                    </form>
+                                </div>
+                                <div hidden>
+                                    Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>
+                                </div>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+          </nav>
+        
+        <div class="body">
+            {% block body %}
+            {% endblock %}
+        </div>
+        <script>
+            // When the user clicks on div, open the popup
+            function cart_popup() {
+              var popup = document.getElementById("cart_table");
+              if (popup.style.visibility != "hidden") {
+                popup.style.visibility = "hidden";
+                popup.style.visibility.backfaceVisibility = "hidden";
+                popup.style.visibility.WebkitBackfaceVisibility = "hidden"; 
+                popup.style.visibility.MozBackfaceVisibility = "hidden";
+
+                popup.classList.remove('fade_in');
+              }
+              else {
+                popup.style.visibility = "visible"
+                popup.style.visibility.backfaceVisibility = "visible";
+                popup.style.visibility.WebkitBackfaceVisibility = "visible"; 
+                popup.style.visibility.MozBackfaceVisibility = "visible";
+
+                popup.classList.add('fade_in');
+              }
+              
+            }
+            </script>
+    </body>
+</html>

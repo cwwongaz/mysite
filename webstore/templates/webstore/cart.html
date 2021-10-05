@@ -1,0 +1,98 @@
+{% extends "webstore/layout.html" %}
+{% load static %}
+
+{% block body %}
+<div id="outer_container">
+    {% for i in items %}
+        <div class="box" id="{{ i.id }}" onclick="location.href=`{% url 'webstore:item_page' item_id=i.id %}`;">
+                <div class="photo" style="justify-content: center; align-items: center; display: flex;">
+                    <img src="{{ i.picture.url }}" style="max-width: 270px; max-height: 200px">
+                </div>
+                <div class="name">
+                    <h6>{{ i.item_name }}</h6>
+                </div>
+                <div class="price" style="color: #B51B0A;">
+                    ${{ i.item_price }}
+                </div>
+                <div class="rating">
+                    <div class="item_page_rating">
+                        <span class="heading">Rating: </span>
+                        <span class="fa fa-star first {% if i.rating_average > 0.5 %} checked {% endif %}"></span>
+                        <span class="fa fa-star second {% if i.rating_average > 1.5 %} checked {% endif %}"></span>
+                        <span class="fa fa-star third {% if i.rating_average > 2.5 %} checked {% endif %}"></span>
+                        <span class="fa fa-star fourth {% if i.rating_average > 3.5 %} checked {% endif %}"></span>
+                        <span class="fa fa-star fifth {% if i.rating_average > 4.5 %} checked {% endif %}"></span>
+                        <span style="color: #515151;font-size: 14px;"> (rating: {{ i.rating_average|floatformat:1 }})</span>
+
+                    </div>
+                </div>
+                <div style="position: relative; all: initial; clear: both; padding-left: 20px; padding-right: 20px;">
+                    <form class="" style="all: initial;" action="{% url 'webstore:item_decrement' i.id %}">
+                        <input type="image" width="16" height="16" src="https://www.flaticon.com/svg/static/icons/svg/1828/1828905.svg" class="loaded" alt="submit">
+                    </form>
+                    <span class="item_num_in_cart"></span>
+                    <script>
+                        function implement_cart_itemNumber(session_cart_list_inString, item_id) {
+                        number_of_item = 0;
+                        item_id_digit = item_id.length
+                        for (i=0; i<session_cart_list_inString.length; i++) {
+                            if (session_cart_list_inString.substring(i, i+item_id_digit) == item_id) {
+                                number_of_item++
+                            };
+                        };
+                        return number_of_item;
+                        };
+                        implement_cart_itemNumber('{{ cart }}', '{{ i.id }}');
+                        document.getElementById("{{ i.id }}").getElementsByClassName("item_num_in_cart")[0].innerHTML = implement_cart_itemNumber('{{ cart }}', '{{ i.id }}');
+                    </script>
+
+                    <script>
+                        implement_cart_itemNumber('{{ cart }}', '{{ i.id }}');
+                    </script>
+
+                    <form class="" style="all: initial;" action="{% url 'webstore:item_increment' i.id %}">
+                        <input type="image" width="16" height="16" src="https://www.flaticon.com/svg/static/icons/svg/748/748113.svg" class="loaded" alt="submit">
+                    </form>
+                </div>
+                <div style="all: initial;">
+                    <form class="cart_and_item" style="all: initial;" action="{% url 'webstore:item_clear' i.id %}">
+                        <input class="btn cart_and_item" style="font-size: 14px;" type="submit" value="remove">
+                    </form>
+                </div>
+                
+        </div>
+    {% endfor %}
+</div>
+
+    <!-- Pagination toolbar -->
+    <div>
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+                <li class="page-item {% if page_number == 1 %} disabled {% endif %}">
+                    <a class="page-link" href="{% url 'webstore:cart_detail' page_number=page_number|add:-1 %}" tabindex="-1">Previous</a>
+                </li>
+                {% if page_number > 2%}
+                <li class="page-item"><a class="page-link" href="{% url 'webstore:cart_detail' page_number|add:-2 %}">{{ page_number|add:-2 }}</a></li>
+                {% endif %}
+                {% if page_number > 1%}
+                <li class="page-item"><a class="page-link" href="{% url 'webstore:cart_detail' page_number|add:-1 %}">{{ page_number|add:-1 }}</a></li>
+                {% endif %}
+                <li class="page-item"><a class="page-link" style="background-color: rgba(251, 219, 190, 1); box-shadow: 0px 0px 12.5px 0px #F2B983 inset;" href="{% url 'webstore:cart_detail' page_number %}">{{ page_number }}</a></li>
+                {% if not page_number|add:1 > total_page %}
+                <li class="page-item"><a class="page-link" href="{% url 'webstore:cart_detail' page_number|add:1 %}">{{ page_number|add:1 }}</a></li>
+                {% endif %}
+                {% if not page_number|add:2 > total_page %}
+                <li class="page-item"><a class="page-link" href="{% url 'webstore:cart_detail' page_number|add:2 %}">{{ page_number|add:2 }}</a></li>
+                {% endif %}
+                <li class="page-item">
+                <li class="page-item {% if page_number == total_page %} disabled {% endif %}">
+                    <a class="page-link" href="{% url 'webstore:cart_detail' page_number=page_number|add:1 %}">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+    <!-- End Pagination toolbar -->
+{% endblock %}
+
+{% block script %}
+{% endblock %}
